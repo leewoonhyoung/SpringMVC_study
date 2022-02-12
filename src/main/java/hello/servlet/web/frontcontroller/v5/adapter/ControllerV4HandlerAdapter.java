@@ -21,15 +21,16 @@ public class ControllerV4HandlerAdapter implements MyHandlerAdapter {
 
     @Override
     public ModelView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException, IOException {
-        ControllerV4 controller = (ControllerV4) handler;
+        ControllerV4 controller = (ControllerV4) handler; // handler가  V4를 Casting 받아.
 
-        Map<String , String> paramMap = createParamMap(request);
+        Map<String , String> paramMap = createParamMap(request);//request에서 파라미터 정보를 받아서
+        // paramMap으로 전달.
 
-        HashMap<String, Object> model = new HashMap<>();
+        HashMap<String, Object> model = new HashMap<>(); //Model 정보를 받을 HashMap생성
 
-        String viewName = controller.process(paramMap, model);
-        ModelView mv = new ModelView(viewName);
-        mv.setModel(model);
+        String viewName = controller.process(paramMap, model);// viewName을 paramMap과 model을 통해서 값을 받음 // 여기서 model은 빈 값
+        ModelView mv = new ModelView(viewName); // viewName을 가지고 ModelView로 변환.
+        mv.setModel(model); //modelView에 model값을 넣는다.
 
         return mv;
 

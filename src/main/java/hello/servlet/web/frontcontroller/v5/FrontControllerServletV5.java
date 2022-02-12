@@ -29,8 +29,8 @@ public class FrontControllerServletV5 extends HttpServlet {
     private final List<MyHandlerAdapter> handlerAdapters = new ArrayList<>();
 
     public FrontControllerServletV5() {
-        initHandlerMappingMap(); // uri 넣고
-        initHandlerAdapters(); // adapter 탑재하고 List 에 탑재한다
+        initHandlerMappingMap(); // 핸들러 매핑 초기화
+        initHandlerAdapters(); //  어댑터 초기화
     }
 
     private void initHandlerMappingMap() {
@@ -44,30 +44,29 @@ public class FrontControllerServletV5 extends HttpServlet {
     }
 
     private void initHandlerAdapters() {
-        handlerAdapters.add(new ControllerV3HandlerAdapter());
-        handlerAdapters.add(new ControllerV4HandlerAdapter());
+        handlerAdapters.add(new ControllerV3HandlerAdapter()); //ControllerV3 아답터 탑재
+        handlerAdapters.add(new ControllerV4HandlerAdapter()); // ControllerV4 아답터 탑재
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Object handler = getHandler(request); // 아탭터 조회 하고 uri 가져와
+        Object handler = getHandler(request); // handler 조회
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        MyHandlerAdapter adapter = getHandlerAdapter(handler); //adapter들에서 해당 uri 들어간 것들 가져와/
-        ModelView mv = adapter.handle(request, response, handler); //  handler 호출하고
+        MyHandlerAdapter adapter = getHandlerAdapter(handler); // 핸들러 처리할수 있는 핸들러 아답터 조회 + 핸들러 호출
+        ModelView mv = adapter.handle(request, response, handler); // 호출된 handler를 ModelView로 반환
 
-
-        MyView view = viewResolver(mv.getViewName()); // view resolver를 호출하고 my view를 반환
-        view.render(mv.getModel(), request, response); // myview에서 html 응답
+        MyView view = viewResolver(mv.getViewName()); //viewResolver를 호출 후 Myview를 반환
+        view.render(mv.getModel(), request, response); // myview에서 HTML 응답.
     }
-
+    // Handler 조회
     private Object getHandler(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
-        System.out.println("requestURI = " + requestURI); ///front-controller/v5/v3/members/new-form
+        System.out.println("requestURI = " + requestURI);
         return handlerMappingMap.get(requestURI);
     }
     private MyHandlerAdapter getHandlerAdapter(Object handler) {
