@@ -51,7 +51,7 @@ public class FrontControllerServletV5 extends HttpServlet {
         }
 
         //어탭터 목록을 찾아서 가져오는 작업
-        //ControllerV3HandlerAdatper를 가져오겠지? //adapter = ControllerV3HandlerAdatper
+        //ControllerV3HandlerAdatper를 가져오겠지? //adapter = ControllerV3HandlerAdapter
         MyHandlerAdapter adapter = getHandlerAdapter(handler);
 
         ModelView mv = adapter.handle(request, response, handler);
