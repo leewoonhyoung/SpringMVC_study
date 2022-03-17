@@ -28,56 +28,55 @@ public class FrontControllerServletV5 extends HttpServlet {
     private final Map<String, Object> handlerMappingMap = new HashMap<>();
     private final List<MyHandlerAdapter> handlerAdapters = new ArrayList<>();
 
-    public FrontControllerServletV5() {
-        initHandlerMappingMap(); // 핸들러 매핑 초기화
-        initHandlerAdapters(); //  어댑터 초기화
+    public FrontControllerServletV5(){
+        initHandlerMappingMap(); // initHandlerMappingMap 에는 Map 형식으로 핸들러 매핑을 초기화한다.
+        initHandlerAdapters(); // 어댑터를 초기화 한다.
     }
 
-    private void initHandlerMappingMap() {
-        handlerMappingMap.put("/front-controller/v5/v3/members/new-form", new MemberFormControllerV3());
+    private void initHandlerMappingMap() {handlerMappingMap.put("/front-controller/v5/v3/members/new-form", new MemberFormControllerV3());
         handlerMappingMap.put("/front-controller/v5/v3/members/save", new MemberSaveControllerV3());
         handlerMappingMap.put("/front-controller/v5/v3/members", new MemberListControllerV3());
-
-        handlerMappingMap.put("/front-controller/v4/members/new-form", new MemberFormControllerV4());
-        handlerMappingMap.put("/front-controller/v4/members/save", new MemberSaveControllerV4());
-        handlerMappingMap.put("/front-controller/v4/members", new MemberListControllerV4());
     }
-
     private void initHandlerAdapters() {
-        handlerAdapters.add(new ControllerV3HandlerAdapter()); //ControllerV3 아답터 탑재
-        handlerAdapters.add(new ControllerV4HandlerAdapter()); // ControllerV4 아답터 탑재
+        handlerAdapters.add(new ControllerV3HandlerAdapter());
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Object handler = getHandler(request); // handler 조회
-        if (handler == null) {
+        Object handler = getHandler(request); // handlerMappingMap에서  controller 가져오기 여기서 handler는 controller와 같은 의미로 사용된다.
+        if (handler == null){
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        MyHandlerAdapter adapter = getHandlerAdapter(handler); // 핸들러 처리할수 있는 핸들러 아답터 조회 + 핸들러 호출
-        ModelView mv = adapter.handle(request, response, handler); // 호출된 handler를 ModelView로 반환
+        //어탭터 목록을 찾아서 가져오는 작업
+        //ControllerV3HandlerAdatper를 가져오겠지? //adapter = ControllerV3HandlerAdatper
+        MyHandlerAdapter adapter = getHandlerAdapter(handler);
 
-        MyView view = viewResolver(mv.getViewName()); //viewResolver를 호출 후 Myview를 반환
-        view.render(mv.getModel(), request, response); // myview에서 HTML 응답.
+        ModelView mv = adapter.handle(request, response, handler);
+
+        MyView view = viewResolver(mv.getViewName());
+        view.render(mv.getModel(), request, response);
+
+
     }
-    // Handler 조회
-    private Object getHandler(HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        System.out.println("requestURI = " + requestURI);
-        return handlerMappingMap.get(requestURI);
-    }
+
     private MyHandlerAdapter getHandlerAdapter(Object handler) {
-        for (MyHandlerAdapter adapter : handlerAdapters) {
-            if (adapter.supports(handler)) {
+        for(MyHandlerAdapter adapter : handlerAdapters){
+            if (adapter.supports(handler)){
                 return adapter;
             }
         }
-        throw new IllegalArgumentException("handler adapter를 찾을 수 없습니다. handler=" + handler);
+        throw new IllegalArgumentException("handler adapter를 찾을수 없습니다");
     }
-    private MyView viewResolver(String viewName) {
+
+    private Object getHandler(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        return handlerMappingMap.get(requestURI);
+    }
+
+    private MyView viewResolver(String viewName){
         return new MyView("/WEB-INF/views/" + viewName + ".jsp");
     }
 }

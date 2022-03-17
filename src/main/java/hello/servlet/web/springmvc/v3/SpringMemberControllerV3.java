@@ -18,9 +18,10 @@ public class SpringMemberControllerV3 {
     private MemberRepository memberRepository  = MemberRepository.getInstance();
 
     @GetMapping("/new-form" )
-    public String newForm(){
+    public String newForm() {
         return "new-form";
     }
+
     @PostMapping("/save")
     public String save(
             @RequestParam("username") String username,
